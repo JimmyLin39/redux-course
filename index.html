@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Todos/Goals</title>
+  </head>
+  <body>
+    <script type="text/javascript">
+      // Library Code
+      function createStore(reducer) {
+        // The store should have four parts
+        // 1. The state
+        // 2. Get the state
+        // 3. Listen to changes on the state
+        // 4. Update the state
+
+        let state
+        let listeners = []
+
+        const getState = () => state
+
+        const subscribe = listener => {
+          listeners.push(listener)
+          // return unsubscribe listener
+          return () => {
+            listeners = listeners.filter(l => l !== listener)
+          }
+        }
+
+        const dispatch = action => {
+          state = reducer(state, action)
+          listeners.forEach(listener => listener())
+        }
+        return {
+          getState,
+          subscribe,
+          dispatch
+        }
+      }
+
+      // App Code
+      const ADD_TODO = 'ADD_TODO'
+      const REMOVE_TODO = 'REMOVE_TODO'
+      const TOGGLE_TODO = 'TOGGLE_TODO'
+      const ADD_GOAL = 'ADD_GOAL'
+      const REMOVE_GOAL = 'REMOVE_GOAL'
+
+      function addTodoAction(todo) {
+        return {
+          type: ADD_TODO,
+          todo
+        }
+      }
+
+      function removeTodoAction(id) {
+        return {
+          type: REMOVE_TODO,
+          id
+        }
+      }
+
+      function toggleTodoAction(id) {
+        return {
+          type: TOGGLE_TODO,
+          id
+        }
+      }
+
+      function addGoalAction(goal) {
+        return {
+          type: ADD_GOAL,
+          goal
+        }
+      }
+
+      function removeGoalAction(id) {
+        return {
+          type: REMOVE_GOAL,
+          id
+        }
+      }
+      /*
+    Characteristics of a Pure Function
+    1) They always return the same result if the same arguments are passed in.
+    2) They depend only on the arguments passed into them.
+    3) Never produce any side effects.
+    */
+
+      // Reducer function
+      function todos(state = [], action) {
+        switch (action.type) {
+          case ADD_TODO:
+            return state.concat([action.todo])
+          case REMOVE_TODO:
+            return state.filter(todo => todo.id !== action.id)
+          case TOGGLE_TODO:
+            return state.map(todo =>
+              todo.id !== action.id
+                ? todo
+                : Object.assign({}, todo, { complete: !todo.complete })
+            )
+          default:
+            return state
+        }
+      }
+
+      function goals(state = [], action) {
+        switch (action.type) {
+          case ADD_GOAL:
+            return state.concat([action.goal])
+          case REMOVE_GOAL:
+            return state.filter(goal => goal.id !== action.id)
+          default:
+            return state
+        }
+      }
+
+      function app(state = {}, action) {
+        return {
+          todos: todos(state.todos, action),
+          goals: goals(state.goals, action)
+        }
+      }
+
+      const store = createStore(app)
+
+      store.subscribe(() => {
+        console.log('The new state is:\n', store.getState())
+      })
+
+      store.dispatch(
+        addTodoAction({
+          id: 0,
+          name: 'Learn Redux',
+          complete: false
+        })
+      )
+
+      store.dispatch(
+        addTodoAction({
+          id: 1,
+          name: 'Learn Vue',
+          complete: false
+        })
+      )
+
+      store.dispatch(
+        addTodoAction({
+          id: 2,
+          name: 'Learn Snowboard',
+          complete: false
+        })
+      )
+
+      store.dispatch(
+        removeTodoAction({
+          id: 1
+        })
+      )
+
+      store.dispatch(
+        toggleTodoAction({
+          id: 0
+        })
+      )
+
+      store.dispatch(
+        addGoalAction({
+          id: 0,
+          name: 'Learn Redux'
+        })
+      )
+
+      store.dispatch(
+        addGoalAction({
+          id: 1,
+          name: 'Lose 20 pounds'
+        })
+      )
+
+      store.dispatch(
+        removeGoalAction({
+          type: REMOVE_GOAL,
+          id: 0
+        })
+      )
+    </script>
+  </body>
+</html>
