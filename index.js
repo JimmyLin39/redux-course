@@ -1,4 +1,11 @@
+/*
+Characteristics of a Pure Function
+1) They always return the same result if the same arguments are passed in.
+2) They depend only on the arguments passed into them.
+3) Never produce any side effects.
+*/
 
+// Reducer function
 function todos (state = [], action) {
   if (action.type === 'ADD_TODO') {
     return state.concat([action.todo])
@@ -7,7 +14,7 @@ function todos (state = [], action) {
   return state
 }
 
-function createStore () {
+function createStore (reducer) {
   // The store should have four parts
   // 1. The state
   // 2. Get the state
@@ -21,7 +28,7 @@ function createStore () {
 
   const subscribe = (listener) => {
     listeners.push(listener)
-    // retuen unsubscribe listener
+    // return unsubscribe listener
     return () => {
       listeners = listeners.filter((l) => l !== listener)
     }
@@ -33,7 +40,8 @@ function createStore () {
   }
   return {
     getState,
-    subscribe
+    subscribe,
+    dispatch
   }
 }
 
