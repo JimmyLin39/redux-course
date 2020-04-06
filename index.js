@@ -6,15 +6,24 @@ Characteristics of a Pure Function
 */
 
 // Reducer function
-function todos (state = [], action) {
-  if (action.type === 'ADD_TODO') {
-    return state.concat([action.todo])
+function todos(state = [], action) {
+  switch (action.type) {
+    case 'ADD_TODO':
+      return state.concat([action.todo])
+    case 'REMOVE_TODO':
+      return state.filter(todo => todo.id !== action.id)
+    case 'TOGGLE_TODO':
+      return state.map(todo =>
+        todo.id !== action.id
+          ? todo
+          : Object.assign({}, todo, { complete: !todo.complete })
+      )
+    default:
+      return state
   }
-
-  return state
 }
 
-function createStore (reducer) {
+function createStore(reducer) {
   // The store should have four parts
   // 1. The state
   // 2. Get the state
@@ -26,17 +35,17 @@ function createStore (reducer) {
 
   const getState = () => state
 
-  const subscribe = (listener) => {
+  const subscribe = listener => {
     listeners.push(listener)
     // return unsubscribe listener
     return () => {
-      listeners = listeners.filter((l) => l !== listener)
+      listeners = listeners.filter(l => l !== listener)
     }
   }
 
-  const dispatch = (action) => {
+  const dispatch = action => {
     state = reducer(state, action)
-    listeners.forEach((listener) => listener())
+    listeners.forEach(listener => listener())
   }
   return {
     getState,
@@ -46,3 +55,44 @@ function createStore (reducer) {
 }
 
 const store = createStore(todos)
+
+store.subscribe(() => {
+  console.log('The new state is:\n', store.getState())
+})
+
+store.dispatch({
+  type: 'ADD_TODO',
+  todo: {
+    id: 0,
+    name: 'Learn Redux',
+    complete: false
+  }
+})
+
+store.dispatch({
+  type: 'ADD_TODO',
+  todo: {
+    id: 1,
+    name: 'Learn Vue',
+    complete: false
+  }
+})
+
+store.dispatch({
+  type: 'ADD_TODO',
+  todo: {
+    id: 2,
+    name: 'Learn Snowboard',
+    complete: false
+  }
+})
+
+store.dispatch({
+  type: 'REMOVE_TODO',
+  id: 2
+})
+
+store.dispatch({
+  type: 'TOGGLE_TODO',
+  id: 1
+})
