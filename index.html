@@ -144,52 +144,76 @@
       const store = createStore(app)
 
       store.subscribe(() => {
-        console.log('The new state is:\n', store.getState())
+        const { goals, todos } = store.getState()
+
+        document.getElementById('goals').innerHTML = ''
+        document.getElementById('todos').innerHTML = ''
+
+        goals.forEach(addGoalToDOM)
+        todos.forEach(addTodoToDOM)
       })
 
-      store.dispatch(
-        addTodoAction({
-          id: 0,
-          name: 'Learn Redux',
-          complete: false
+      function addTodoToDOM(todo) {
+        const node = document.createElement('li')
+        const text = document.createTextNode(todo.name)
+        node.appendChild(text)
+        node.style.textDecoration = todo.complete ? 'line-through' : 'none'
+        node.addEventListener('click', () => {
+          store.dispatch(toggleTodoAction(todo.id))
         })
-      )
+        document.getElementById('todos').appendChild(node)
+      }
 
-      store.dispatch(
-        addTodoAction({
-          id: 1,
-          name: 'Learn Vue',
-          complete: false
-        })
-      )
+      function addGoalToDOM(goal) {
+        const node = document.createElement('li')
+        const text = document.createTextNode(goal.name)
+        node.appendChild(text)
 
-      store.dispatch(
-        addTodoAction({
-          id: 2,
-          name: 'Learn Snowboard',
-          complete: false
-        })
-      )
+        document.getElementById('goals').appendChild(node)
+      }
+      // store.dispatch(
+      //   addTodoAction({
+      //     id: 0,
+      //     name: 'Learn Redux',
+      //     complete: false
+      //   })
+      // )
 
-      store.dispatch(removeTodoAction(1))
+      // store.dispatch(
+      //   addTodoAction({
+      //     id: 1,
+      //     name: 'Learn Vue',
+      //     complete: false
+      //   })
+      // )
 
-      store.dispatch(toggleTodoAction(0))
+      // store.dispatch(
+      //   addTodoAction({
+      //     id: 2,
+      //     name: 'Learn Snowboard',
+      //     complete: false
+      //   })
+      // )
 
-      store.dispatch(
-        addGoalAction({
-          id: 0,
-          name: 'Learn Redux'
-        })
-      )
+      // store.dispatch(removeTodoAction(1))
 
-      store.dispatch(
-        addGoalAction({
-          id: 1,
-          name: 'Lose 20 pounds'
-        })
-      )
+      // store.dispatch(toggleTodoAction(0))
 
-      store.dispatch(removeGoalAction(0))
+      // store.dispatch(
+      //   addGoalAction({
+      //     id: 0,
+      //     name: 'Learn Redux'
+      //   })
+      // )
+
+      // store.dispatch(
+      //   addGoalAction({
+      //     id: 1,
+      //     name: 'Lose 20 pounds'
+      //   })
+      // )
+
+      // store.dispatch(removeGoalAction(0))
 
       // DOM CODE
       function addTodo() {
