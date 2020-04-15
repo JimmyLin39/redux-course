@@ -229,6 +229,11 @@
         }
         toggleItem = id => {
           this.props.store.dispatch(toggleTodoAction(id))
+
+          return API.saveTodoToggle(id).catch(() => {
+            this.props.store.dispatch(toggleTodoAction(id))
+            alert('An error occured. Try again.')
+          })
         }
         render() {
           return (
@@ -265,6 +270,10 @@
         }
         removeItem = goal => {
           this.props.store.dispatch(removeGoalAction(goal.id))
+          return API.deleteGoal(goal.id).catch(() => {
+            this.props.store.dispatch(addGoalAction(goal))
+            alert('An error occurred. Try again.')
+          })
         }
         render() {
           return (
